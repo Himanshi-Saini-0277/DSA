@@ -9,7 +9,7 @@ struct queue{
 };
 
 int isFull(struct queue *q){
-    if(q->r == q->size-1){
+    if((q->r+1)%q->size == q->f){
         return 1;
     }
     return 0;
@@ -27,8 +27,9 @@ void enqueue(struct queue *q, int val){
         printf("Queue Overflow\n");
     }
     else{
-        q->r++ ;
+        q->r = (q->r+1)%q->size;
         q->arr[q->r] = val;
+        printf("Enqueued %d\n", val);
     }
 }
 
@@ -38,32 +39,36 @@ void dequeue(struct queue *q){
         printf("Queue Underflow\n");
     }
     else{
-        q->f ++;
+        q->f = (q->f+1)%q->size;
         a = q->arr[q->f];
     }
     printf("Dequeued %d\n", a);
 }
 
 void print(struct queue *q){
-    for (int i= q->f+1; i<= q->r; i++){
-        printf("%d ", q->arr[i]);
+    int i = (q->f+1)%q->size;
+    printf("Queue is: ");
+    while(i != (q->r+1)%q->size){
+        printf("%d ",q->arr[i]);
+        i = (i+1)%q->size;
     }
     printf("\n");
 }
 
 int main(){
     struct queue *q = (struct queue *)malloc(sizeof(struct queue));
-    q->size = 10;
-    q->f = q->r = -1;
+    q->size = 4;
+    q->f = q->r = 0;
     q->arr = (int *)malloc(q->size *sizeof(int));
 
     enqueue(q, 1);
     enqueue(q, 2);
     enqueue(q, 3);
-    enqueue(q, 4);
     print(q);
 
     dequeue(q);
+
+    enqueue(q, 4);
     print(q);
 
     if (isFull(q)){
